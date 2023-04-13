@@ -90,37 +90,47 @@ func main() {
 	//r:=strings.Index("飞雪无情","飞")
 	//fmt.Println(r)
 	//条件
-	if i > 0 {
-		fmt.Println("+" + strconv.Itoa(i))
-	} else {
-		fmt.Println("-" + strconv.Itoa(i))
+	//if i > 0 {
+	//	fmt.Println("+" + strconv.Itoa(i))
+	//} else {
+	//	fmt.Println("-" + strconv.Itoa(i))
+	//}
+	////选择结构
+	//switch i {
+	//case 1:
+	//	fallthrough
+	//case 15:
+	//	fmt.Println("yes")
+	//default:
+	//	fmt.Println("没有匹配")
+	//}
+	////fallthrough是一个控制流关键字，可用于在 switch 语句中，继续执行下一个分支的代码块。
+	//sum := 0
+	//for i := 1; i <= 100; i++ {
+	//	sum += i
+	//}
+	//fmt.Println(sum)
+	//for i >= 0 {
+	//	sum += i
+	//	i--
+	//}
+	//fmt.Println(sum, i)
+	//for {
+	//	sum += i
+	//	i++
+	//	if i > 100 {
+	//		break
+	//	}
+	//}
+	//fmt.Println(sum)
+
+	//数组，集合类型
+	//数组声明：array:=[5]string{"a","b","c","d","e"}
+	array := [5]string{"a", "b", "c", "d", "e"}
+	fmt.Println(array[2])
+	for j := 0; j < 5; j++ {
+		fmt.Printf("数组索引：%d,对应值：%s\n", j, array[j])
+
 	}
-	//选择结构
-	switch i {
-	case 1:
-		fallthrough
-	case 15:
-		fmt.Println("yes")
-	default:
-		fmt.Println("没有匹配")
-	}
-	//fallthrough是一个控制流关键字，可用于在 switch 语句中，继续执行下一个分支的代码块。
-	sum := 0
-	for i := 1; i <= 100; i++ {
-		sum += i
-	}
-	fmt.Println(sum)
-	for i >= 0 {
-		sum += i
-		i--
-	}
-	fmt.Println(sum, i)
-	for {
-		sum += i
-		i++
-		if i > 100 {
-			break
-		}
-	}
-	fmt.Println(sum)
+
 }
