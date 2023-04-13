@@ -87,5 +87,40 @@ func main() {
 
 	strings.TrimSpace(s string) string：去除字符串s前后的空格。
 	**/
-
+	//r:=strings.Index("飞雪无情","飞")
+	//fmt.Println(r)
+	//条件
+	if i > 0 {
+		fmt.Println("+" + strconv.Itoa(i))
+	} else {
+		fmt.Println("-" + strconv.Itoa(i))
+	}
+	//选择结构
+	switch i {
+	case 1:
+		fallthrough
+	case 15:
+		fmt.Println("yes")
+	default:
+		fmt.Println("没有匹配")
+	}
+	//fallthrough是一个控制流关键字，可用于在 switch 语句中，继续执行下一个分支的代码块。
+	sum := 0
+	for i := 1; i <= 100; i++ {
+		sum += i
+	}
+	fmt.Println(sum)
+	for i >= 0 {
+		sum += i
+		i--
+	}
+	fmt.Println(sum, i)
+	for {
+		sum += i
+		i++
+		if i > 100 {
+			break
+		}
+	}
+	fmt.Println(sum)
 }
