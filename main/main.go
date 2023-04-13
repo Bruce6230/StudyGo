@@ -130,7 +130,50 @@ func main() {
 	fmt.Println(array[2])
 	for j := 0; j < 5; j++ {
 		fmt.Printf("数组索引：%d,对应值：%s\n", j, array[j])
-
 	}
+	//for range形式 第一个是索引，第二个是数组的值
+	//arr := []string{"hello", "world", "Go"}
+	//for index, value := range arr {
+	//	fmt.Printf("Index: %d, Value: %s\n", index, value)
+	//}
+	//arr := []string{"hello", "world", "Go"}
+	//for _, value := range arr {
+	//	fmt.Println(value)
+	//}
+
+	//slice切片 左闭右开
+	//arr := []string{"hello", "world", "Go"}
+	slice := array[0:3]
+	sl := array[:]
+	fmt.Println(sl)
+	fmt.Println(slice)
+	for j := 0; j < 5; j++ {
+		fmt.Printf("数组索引：%d,对应值：%s\n", j, array[j])
+	}
+	sl[1] = "pro"
+	fmt.Println(sl)
+	//切片是一个拥有三个字段的数据结构，分别是指向数组的指针data,长度Len,容量cap
+
+	//使用 make 函数创建切片时，需要指定切片的长度和容量：
+	l := make([]int, 5, 10) // 创建长度为 5，容量为 10 的切片
+	for index, value := range l {
+		fmt.Println(index, value)
+	}
+	//通过append对一个切片追加元素，返回新切片
+	tt := append(l, 10)
+	fmt.Println(tt)
+	//向切片中添加单个元素，可以通过 append 函数添加单个元素到切片的末尾：
+	//f := []int{1, 2, 3}
+	//f = append(f, 4)
+	//fmt.Println(f) // 输出 [1 2 3 4]
+	//向切片中添加多个元素,可以通过 append 函数同时添加多个元素到切片的末尾：
+	//f := []int{1, 2, 3}
+	//f = append(f, 4, 5, 6)
+	//fmt.Println(f) // 输出 [1 2 3 4 5 6]
+	//将一个切片添加到另一个切片的末尾,可以通过 append 函数将一个切片添加到另一个切片的末尾：
+	s1 := []int{1, 2, 3}
+	s2 := []int{4, 5, 6}
+	s1 = append(s1, s2...)
+	fmt.Println(s1) // 输出 [1 2 3 4 5 6]
 
 }
