@@ -175,5 +175,42 @@ func main() {
 	s2 := []int{4, 5, 6}
 	s1 = append(s1, s2...)
 	fmt.Println(s1) // 输出 [1 2 3 4 5 6]
+	//Map声明初始化
+	nameAgeMap := make(map[string]int)
+	nameAgeMap["A"] = 10
+	//声明一个空map：
+	//var m map[string]int
+	//使用make函数初始化一个map：
+	//m := make(map[string]int)
+	//使用键值对初始化一个Map
+	//m := map[string]int{
+	//	"apple":  5,
+	//	"orange": 2,
+	//	"banana": 3,
+	//}
+	//	需要注意的是，对于一个空的map，不能直接添加键值对。如果需要添加键值对，必须先使用make函数或键值对初始化map，然后才能进行添加。例如：
+	//	m := make(map[string]int)
+	//	m["apple"] = 5
+	//	m["orange"] = 2
+	//	m["banana"] = 3
+	//map遍历
+	m := map[string]int{
+		"apple":  5,
+		"orange": 2,
+		"banana": 3,
+	}
+
+	for key, value := range m {
+		fmt.Println(key, value)
+	}
+
+	str := "hello world"
+	bs := []byte(str)
+	fmt.Println(bs)
+	fmt.Println(bs[0])
+	fmt.Println(len(str))
+	for m, n := range str {
+		fmt.Println(m, n)
+	}
 
 }
