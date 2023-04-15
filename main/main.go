@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -13,8 +14,106 @@ import (
 //	fmt.Println("hello world")
 //}
 
+//函数定义声明
+//func funcName(params) result{
+//	body
+//}
+/*
+关键字 func
+函数名字 funcName
+函数的参数 params，用来定义形参和变量名和类型，可以有一个参数，多个或者没有
+返回的函数值 result 用于定义返回值的类型型，如果没有返回值，省略即可，也可以有多个返回值
+函数体 body 在这里写函数逻辑
+*/
+
+func sum(a int, b int) int {
+	return a + b
+}
+
+// 多指返回
+func dec(a int, b int) (int, error) {
+	if a < 0 || b < 0 {
+		return 0, errors.New("a或者b不能为负数")
+	}
+	return a - b, nil
+}
+
+// 命名返回参数
+func f(a int, b int) (sum int, err error) {
+	if a <= 0 || b <= 0 {
+		sum = 0
+		err = errors.New("a,b取值错误")
+		return
+	}
+	sum = a + b
+	err = nil
+	return
+}
+
+// 可变参数
+func sum1(params ...int) int {
+	temp := 0
+	for _, i := range params {
+		temp += i
+	}
+	return temp
+}
+
+//函数名称首字母小写代表私有函数，只有在同一个包中才可以被调用；
+//函数名称首字母大写代表共有函数，不同的包也可以调用
+//任何一个函数都会从属于一个包
+//tips:Go没有public private这样的修饰符来修饰函数公有还是私有，而是通过函数名称大小写来代表，更简洁
+
+//匿名函数和闭包：顾名思义，匿名函数就是没有名字的函数，这是他和正常函数的主要区别，下面示例中,sum2嗲表一个匿名函数，这个sum2时一个函数类型的变量，并不是函数的名字
+/**
+函数类型的变量和函数名在语言中的作用不同：
+
+函数类型的变量是一个特殊的类型，它可以存储一个函数的引用。这个类型的变量通常被称为函数指针或函数类型的指针。函数指针可以赋值给其他函数指针，也可以用作函数的参数或返回值类型。
+
+函数名则是表示一个函数的标识符。你可以使用函数名来调用函数，并且可以传递函数名作为参数传递给其他函数。
+
+在很多编程语言中，函数名和函数可以看作是等价的，因此可以将函数名赋值给一个函数类型的变量。在这种情况下，函数名实际上是一个指向该函数的指针。
+
+在其他一些语言中，函数名和函数是不同的，在这些语言中不能将函数名直接赋值给函数类型的变量，必须使用特殊的语法来表示函数的引用。
+*/
+func show() {
+	sum2 := func(a int, b int) int {
+		return a + b
+	}
+	fmt.Println(sum2(1, 2))
+}
+
+// 方法：方法和函数是两个概念，但是非常相似，不同在于方法必须有一个接收者，这个接收者是一个类型，这样方法就和类型绑定在一起，成为这个类型的方法
+type Age uint
+
+func (age Age) string() {
+	fmt.Println(age)
+
+}
+func (age *Age) Modify() {
+	*age = Age(30)
+}
+
+/*
+tips:在调用方法的时候，传递的接收者本质上都是副本，只不过一个是这个值副本，一个是指向这个值指针的副本。
+示例中调用指针接收者方法的时候，使用的是一个值类型的变量，并不是一个指针类型，其实这里使用指针变量调用也是可以的，如下面的代码所示：
+(&age).Modify
+Go语言编译器自动：
+如果使用一个值类型变量调用指针接受者的方法，Go语言编译器会自动帮我们取指针调用，以满足指针接收者的要求
+如果一个在指针类型变量调用值类型结束这方法，Go语言会自动帮我们转义，大大提高开发者效率，但是要注意bug
+*/
 // 定义变量 var name type = expression
 func main() {
+	aaa := Age(10)
+	fmt.Println(aaa)
+	aaa.Modify()
+	aaa.string()
+	age := Age(25)
+	age.string()
+	show()
+	fmt.Println(sum1(1, 2, 3, 4))
+	fmt.Println(f(10, 2))
+	fmt.Println(dec(10, 2))
 	var i int = 10
 	fmt.Println(i)
 	//也可以不用指定变量类型
@@ -212,5 +311,19 @@ func main() {
 	for m, n := range str {
 		fmt.Println(m, n)
 	}
+	//函数声明
+	//func funcName(params) result{
+	//	body
+	//}
+	/*
+		func 关键字
+		funcName 函数名字
+		params 函数的参数，用来定义形参的变量名和类型，可以有一个参数也可以有多个，也可以没有
+		result 返回的函数值，用于定义返回值的类型，如果没有返回值 省略即可，也可以有多个返回值
+		body函数体
+	*/
+	//func sum(a int,b int) int{
+	//	return a+b;
+	//}
 
 }
