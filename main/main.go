@@ -103,7 +103,210 @@ Go语言编译器自动：
 如果一个在指针类型变量调用值类型结束这方法，Go语言会自动帮我们转义，大大提高开发者效率，但是要注意bug
 */
 // 定义变量 var name type = expression
+
+/*
+结构体：
+结构体是一种聚合类型，里面可以包含任意类型的值，这些值就是我们定义的结构体的成员，也常称为字段。在Go语言中定义一个结构体需要使用type+struct关键字组合
+在下面例子中，自定义结构体person，有两个字段
+*/
+type person struct {
+	name string
+	age  uint
+}
+
+// 结构体声明使用
+var p person
+
+//or 简短声明法
+
+/*
+接口
+在Go语言中，接口(interface)是一组方法签名(方法名称、参数和返回值类型的集合)定义的一种类型。接口类型是一个抽象的类型，它并不关心这些方法实现的细节，只关心方法的定义。因此，接口类型允许我们定义一个对象可以实现的多种行为，而不必关心对象的具体实现。
+
+接口定义关键字为 `interface`，定义样例如下：
+
+```go
+type 接口名 interface {
+    方法名1 (参数列表) 返回类型列表 // 方法签名1
+    方法名2 (参数列表) 返回类型列表 // 方法签名2
+    ...
+}
+```
+
+其中，接口名是一个标识符，接口中可以包含一个或多个方法签名。对于方法签名，只需要定义方法的名称、参数列表以及方法的返回值类型。方法的返回类型可以是单个类型或者是由多个类型组成的一个元组。
+
+注意，接口中只包含方法的声明，不包括方法的实现代码。要实现一个接口类型，需要在一个类型上定义这些方法。
+
+示例：
+
+```go
+// 定义接口
+type Animal interface {
+    Speak() string
+}
+
+// 定义一个实现动物接口的结构体
+type Dog struct {
+}
+
+// 实现动物接口中的 Speak 方法
+func (d Dog) Speak() string {
+    return "woof"
+}
+```
+
+在上面的示例中，定义了一个名为 `Animal` 的接口，它定义了一个名为 `Speak` 的方法。然后定义了一个 `Dog` 结构体类型，在 `Dog` 结构体类型上实现 `Animal` 接口的 `Speak` 方法。这个 `Speak` 方法传回了一个字符串 "woof"，表示狗类的叫声。这样，类型 `Dog` 就是一个实现了接口 `Animal` 的类型。
+*/
+
+// 举例
+type Stringer interface {
+	String() string
+}
+
+//接口的是闲着必须是一个具体的类型
+//func (p person) String() string{
+//	return fmt.Sprintf("the name is %s,age is %d",p.name,p.age)
+//}
+
+func printString(s fmt.Stringer) {
+	fmt.Println(s.String())
+}
+
+// 以值类型接收者实现接口时，不管类型本身，还是该类型的指针类型，都实现了该接口
+// 以指针类型接收者实现接口的时候，只有对应的指针上实现了该接口
+func (p *person) String() string {
+	return fmt.Sprintf("the name is %s,age is %d", p.name, p.age)
+}
+
+//工厂函数
+//在Go语言中，一个工厂函数可以用来创建新的对象，而不是直接使用结构体字面量来创建。
+//
+//工厂函数是一个普通函数，不同于普通函数的是，它返回一个结构体变量或接口的实例。通常，工厂函数有以下的命名约定，使其更加易于理解：
+//
+//- `New` + 结构体名称 或
+//- `New` + 接口名称
+//
+//下面是一个简单的例子，演示如何使用工厂函数创建和初始化一个结构体的实例：
+//
+//```go
+//package main
+//
+//import "fmt"
+
+type Person struct {
+	Name    string
+	Age     int
+	Address string
+}
+
+// 工厂函数
+func NewPerson(name string, age int, address string) *Person {
+	return &Person{
+		Name:    name,
+		Age:     age,
+		Address: address,
+	}
+}
+
+//
+//```
+//
+//上面的代码定义了一个 `Person` 结构体和一个命名为 `NewPerson` 的工厂函数，用于创建新的 `Person` 结构体实例。`NewPerson`函数接受三个参数，返回一个指向新分配的 `Person` 结构体的指针，该结构体含有传递的三个参数。最后在 `main` 函数中，调用 `NewPerson` 函数创建一个指向 `Person` 实例的指针，并使用打印语句将结构体中的字段打印到标准输出。
+
+// 初始化结构体使用{}初始化字段值
+// 工厂函数，返回一个error接口，其实实现时*errorString
+func New(text string) error {
+	return &errorString{text}
+}
+
+// 结构体，内部一个字段s，存储错误信息
+type errorString struct {
+	s string
+}
+
+// 实现error接口
+func (e *errorString) Error() string {
+	return e.s
+}
+
+/*
+Go中没有继承的概念，所以结构，接口之间也没有父子关系，Go语言提倡组合，利用组合和接口达到代码复用的目的
+*/
+type Reader interface {
+	Read(p []byte) (n int, err error)
+}
+type Writer interface {
+	Write(p []byte) (n int, err error)
+}
+type ReadWriter interface {
+	Reader
+	Writer
+}
+
+// 结构体组合
+type Animal struct {
+	name string
+}
+
+func (a *Animal) Eat() {
+	fmt.Printf("%s is eating...", a.name)
+}
+
+type Dog struct {
+	*Animal
+}
+
+func (d *Dog) Bark() {
+	fmt.Printf("%s is barking...", d.name)
+}
+
+type Cat struct {
+	*Animal
+}
+
+func (c *Cat) Meow() {
+	fmt.Printf("%s is meowing...", c.name)
+}
+
+//在 Go 语言中，类型断言（Type Assertion）用于将一个接口类型的变量转换为另一个具体类型的变量。
+//
+//类型断言语法如下：
+//
+//```go
+//x.(T)
+//```
+//
+//其中，`x` 为接口类型变量，`T` 为断言的具体类型。该语法会将 `x` 转换为类型 `T`，如果断言成功，则返回一个具体类型 `T` 的值以及一个 `true` 值；否则返回一个该类型的零值以及一个 `false` 值。
+//
+//例如，我们可以将一个 `interface{}` 类型的变量 `x` 转换为一个 `int` 类型的变量：
+//
+//```go
+//func foo(x interface{}) {
+//    i, ok := x.(int)
+//    if ok {
+//        fmt.Println("x is an int:", i)
+//    } else {
+//        fmt.Println("x is not an int")
+//    }
+//}
+//
+//func main() {
+//    foo("hello")
+//    foo(123)
+//}
+//```
+//
+//在上面的代码中，`foo` 函数接受一个 `interface{}` 类型的参数 `x`，然后通过断言将其转换为 `int` 类型。如果转换成功，则输出 `x is an int` 并打印出具体的值 `i`；否则输出 `x is not an int`。
+//
+//在 `main` 函数中，我们分别调用 `foo` 函数，并传递了一个字符串和一个整数参数。第一次调用中，由于字符串无法转换为整数类型，所以输出 `x is not an int`；第二次调用中，整数参数成功转换为了整数类型并输出。
+//
+//需要注意的是，在使用类型断言时，如果断言的类型不是接口类型的底层类型或其实现类，则会导致运行时错误。因此，我们在使用类型断言时需要谨慎处理可能出现的错误情况。
+
 func main() {
+	per := NewPerson("Alice", 20, "Beijing")
+	poo := person{"Makiyo", 30}
+	printString(&poo)
+	fmt.Println(poo.name, poo.age, per.Name)
 	aaa := Age(10)
 	fmt.Println(aaa)
 	aaa.Modify()
