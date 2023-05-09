@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
 //hello world
@@ -25,6 +27,17 @@ import (
 返回的函数值 result 用于定义返回值的类型型，如果没有返回值，省略即可，也可以有多个返回值
 函数体 body 在这里写函数逻辑
 */
+
+var (
+	res   int
+	mutex sync.RWMutex
+)
+
+func add(i int) {
+	mutex.Lock()
+	res += i
+	mutex.Unlock()
+}
 
 func sum(a int, b int) int {
 	return a + b
@@ -501,7 +514,9 @@ func main() {
 		"orange": 2,
 		"banana": 3,
 	}
-
+	var sli []int
+	sli = append(sli, 1)
+	fmt.Println(sli)
 	for key, value := range m {
 		fmt.Println(key, value)
 	}
@@ -529,4 +544,209 @@ func main() {
 	//	return a+b;
 	//}
 
+	//	调用协程
+	go fmt.Println("makiyo")
+	fmt.Println("makiyo is me ")
+	time.Sleep(time.Second)
+	//关键字语法
+	//go function()
+	//go 提供channel（通道）进行通信
+	//chan是channel类型，一个chan的操作只有两种，发送和接收
+	//接收：获取chan中的值 操作符<-chan
+	//发送：向chan发送值，把值存在chan这种，chan<-
+	ch := make(chan string)
+	go func() {
+		ch <- "hello world"
+	}()
+
+	fmt.Println(<-ch)
+	//无缓冲的channel是指在传递数据时，发送方和接收方必须同时准备好，否则阻塞等待。这种channel保证了数据的同步传递，也就是说，接收方在接收数据时会等待发送方发送数据，并且发送方在发送数据时会等待接收方接收数据。如果没有接收方，则发送方会一直阻塞等待，直到有接收方接收数据，同理，如果没有发送方，则接收方会一直阻塞等待，直到有发送方发送数据。无缓冲channel的声明方式为：
+	//复制
+	//var ch chan int   //声明一个无缓冲的channel，可传递int类型的数据
+	//有缓冲的channel则与无缓冲的channel不同，在创建时可以传入一个缓冲区大小，表示channel中最多可以缓存多少个元素。当缓冲区满时再进行发送数据时，发送方会一直阻塞等待，直到接收方接收了元素并打开了一个缓冲区，才会将元素放入channel中。当缓冲区为空时再进行接收数据时，接收方会一直阻塞等待，直到发送方发送了元素并占用了一个缓冲区，才会从channel中取出元素。有缓冲的channel的声明方式为：
+	//声明一个缓冲区大小为10的channel，可传递int类型的数据
+	//意在使用有缓冲的channel时，缓冲区的大小要适当，过大或过小都不利于程序的执行效率。
+	cacheCh := make(chan int, 5)
+	//cap获取channel的容量，len获取channel中元素的个数
+	cacheCh <- 1
+	cacheCh <- 25
+	fmt.Println(len(cacheCh), cap(cacheCh))
+	//当一个channel被关闭后，接收方依然可以从channel中读取已经发送的数据，直到channel中的所有数据都被读取完毕，此时再读取channel中的数据，将得到该类型的零值，例如int类型的channel，就会得到0。
+	//对于已经关闭的channel，再次向其发送数据会导致panic异常，因此我们需要通过检查channel的状态来避免这种情况的发生。
+	close(cacheCh)
+	//单向channel
+	//send := make(chan<- int, 1)  // 将ch转换为只能发送数据的channel
+	//recv := make(<-chan int, 1)  // 将ch转换为只能接收数据的channel
+	//
+	//send <- 1         // 向send发送数据
+	//// s := <-send    // 不能从send中读取数据，这会导致编译错误
+	//<-recv            // 从recv中读取数据
+	//// recv <- 1      // 不能向recv发送数据，这会导致编译错误
+	//ch1 := make(chan int)
+	//ch2 := make(chan int)
+	//
+	//// goroutine1向ch1中写入数据
+	//go func() {
+	//	for i := 1; i <= 10; i++ {
+	//		ch1 <- i
+	//		time.Sleep(100 * time.Millisecond)
+	//	}
+	//	close(ch1)
+	//}()
+	//
+	//// goroutine2向ch2中写入数据
+	//go func() {
+	//	for i := 11; i <= 20; i++ {
+	//		ch2 <- i
+	//		time.Sleep(200 * time.Millisecond)
+	//	}
+	//	close(ch2)
+	//}()
+	//
+	//// 使用select语句多路复用ch1和ch2
+	//for {
+	//	select {
+	//	case x, ok := <-ch1:
+	//		if !ok {
+	//			ch1 = nil
+	//			continue
+	//		}
+	//		fmt.Println("read from ch1:", x)
+	//	case y, ok := <-ch2:
+	//		if !ok {
+	//			ch2 = nil
+	//			continue
+	//		}
+	//		fmt.Println("read from ch2:", y)
+	//	}
+	//	if ch1 == nil && ch2 == nil {
+	//		break
+	//	}
+	//}
+	for i := 0; i < 100; i++ {
+		go add(10)
+	}
+	fmt.Println("和为" + strconv.Itoa(res))
+	//临界区指一段需要被多线程同步的代码区域,Lock和unlock代表加锁和解锁
+	//run()
+	doOnce()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	stopCh := make(chan bool)
+	go func() {
+		defer wg.Done()
+		watchDog(stopCh, "监控狗")
+	}()
+	time.Sleep(5 * time.Second)
+	stopCh <- true
+	wg.Wait()
+	//`Context`接口中提供了四个方法，用于传递上下文信息、超时控制和取消任务等相关操作。这四个方法分别是：
+	//
+	//1. `Deadline() (deadline time.Time, ok bool)`：返回该`Context`对象的截止时间和是否设置了截止时间。
+	//
+	//2. `Done() <-chan struct{}`：返回一个只读的信道，如果该`Context`对象被取消或超时，该信道会被关闭。
+	//
+	//3. `Err() error`：返回与该`Context`对象关联的错误信息，前提是该`Context`对象已经被取消或者超时。
+	//
+	//4. `Value(key interface{}) interface{}`：返回预设的值，该值必须是线程安全的。
+	//
+	//这四个方法共同组成了`Context`接口的核心功能，使得`Context`可以在多个 Goroutine 之间安全地进行数据同步、传递上下文信息、超时控制和取消任务等操作。由于`Context`接口的灵活性和强大的功能，目前已经被广泛应用于Go语言的各种并发编程场景中。
+	var n map[string]int
+	n["nihao"] = 1
+
+}
+func init() {
+	//声明并初始化三个值
+
+}
+func readSum() int {
+	//只获取读锁
+	mutex.RLock()
+	defer mutex.RUnlock()
+	b := res
+	return b
+}
+
+/*
+sync.WaitGroup使用步骤
+声明一个sync.WaitGroup，通过Add方法设置计数器的值，需要多少个协程设置多少个
+每次协程执行完毕时计数器减1，告诉sync.WaitGroup该协程已经执行完毕
+最后调用wait方法一直等待，直到计数器值为0
+*/
+func run() {
+	var wg sync.WaitGroup
+	//因为监控110个协程，设置为110
+	wg.Add(110)
+	for i := 0; i < 100; i++ {
+		go func() {
+			//计数器减1
+			defer wg.Done()
+			add(10)
+		}()
+	}
+	for i := 0; i < 10; i++ {
+		go func() {
+			//计数器值减1
+			defer wg.Done()
+			fmt.Println("和为：", readSum())
+		}()
+		//一直等待到计数器为0
+		wg.Wait()
+	}
+}
+
+// sync.once保证代码只执行一次
+func doOnce() {
+	var once sync.Once
+	onceBody := func() {
+		fmt.Println("Only Once")
+	}
+	//用于等待协程执行完毕
+	done := make(chan bool)
+	//启动10个协程执行doOnce
+	for i := 0; i < 10; i++ {
+		go func() {
+			once.Do(onceBody)
+			done <- true
+		}()
+	}
+	for i := 0; i < 10; i++ {
+		<-done
+	}
+}
+
+// sync.Cond用法
+func race() {
+	cond := sync.NewCond(&sync.Mutex{})
+	var wg sync.WaitGroup
+	wg.Add(11)
+	for i := 0; i < 10; i++ {
+		go func(num int) {
+			defer wg.Done()
+			fmt.Println(num, "号已就位")
+			cond.L.Lock()
+			cond.Wait()
+			fmt.Println(num, "号开始跑")
+			cond.L.Unlock()
+		}(i)
+	}
+	//等待所有协程进入wait状态
+	time.Sleep(2 * time.Second)
+	go func() {
+		defer wg.Done()
+		fmt.Println("比赛开始")
+		cond.Broadcast()
+	}()
+}
+func watchDog(stopCh chan bool, name string) {
+	for {
+		select {
+		case <-stopCh:
+			fmt.Println("指令已收到，马上停止")
+			return
+		default:
+			fmt.Println(name, "正在监控")
+		}
+		time.Sleep(1 * time.Second)
+	}
 }
